@@ -21,7 +21,7 @@
 
       // Dynamically create a list of lesson links
       const lessonList = document.getElementById('lesson-list');
-      lessonList.innerHTML = lessons.map(lesson => `
+      lessonList.innerHTML = lessonsList.map(lesson => `
         <div>
           <a href="view-lesson.html?lesson_id=${lesson.id}">${lesson.name}</a>
         </div>
