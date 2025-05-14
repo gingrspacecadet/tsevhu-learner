@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Exercise</title>
+</head>
+<body>
+  <h1>Add Exercise to Lesson</h1>
+  <form id="exercise-form">
+    <label>Exercise Type:</label>
+    <select name="type" required>
+      <option value="flashcard">Flashcard</option>
+      <option value="multiple_choice">Multiple Choice</option>
+      <option value="sentence_builder">Sentence Builder</option>
+    </select>
+    <br>
+
+    <label>Prompt (Question/Task):</label>
+    <input name="prompt" required />
+    <br>
+
+    <label>Correct Answer:</label>
+    <input name="correct_answer" required />
+    <br>
+
+    <label>Options (for multiple-choice, comma separated):</label>
+    <input name="options" />
+    <br>
+
+    <button type="submit">Create Exercise</button>
+  </form>
+
+  <script>
+    document.getElementById('exercise-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const lessonId = 'your-lesson-id';  // Replace with dynamic lesson ID
+      const type = e.target.type.value;
+      const prompt = e.target.prompt.value;
+      const correct_answer = e.target.correct_answer.value;
+      const options = e.target.options.value ? e.target.options.value.split(',') : [];
+
+      const res = await fetch(`/api/exercises?lesson_id=${lessonId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type,
+          prompt,
+          correct_answer,
+          options: JSON.stringify(options),
+        })
+      });
+
+      if (res.ok) {
+        alert('Exercise created!');
+        e.target.reset();
+      } else {
+        alert('Failed to create exercise');
+      }
+    });
+  </script>
+</body>
+</html>

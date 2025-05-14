@@ -1,32 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
   <title>Lesson List</title>
-  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <main>
-    <h1>Lessons</h1>
-    <ul id="lesson-list">Loading...</ul>
-    <a href="/create.html">➕ Create a New Lesson</a>
-  </main>
-  <script type="module">
-    const list = document.getElementById('lesson-list');
+  <h1>Lessons</h1>
+  <div id="lesson-list"></div>
 
-    const res = await fetch('/api/lessons');
-    const data = await res.json();
+  <script>
+    async function loadLessons() {
+      // Fetch lessons from the API
+      const res = await fetch('/api/lessons');
+      const lessons = await res.json();
 
-    if (Array.isArray(data.lessons)) {
-      list.innerHTML = '';
-      data.lessons.forEach(lesson => {
-        const li = document.createElement('li');
-        li.textContent = `${lesson.title}: ${lesson.description}`;
-        list.appendChild(li);
-      });
-    } else {
-      list.textContent = 'Failed to load lessons.';
+      // Dynamically create a list of lesson links
+      const lessonList = document.getElementById('lesson-list');
+      lessonList.innerHTML = lessons.map(lesson => `
+        <div>
+          <a href="view-lesson.html?lesson_id=${lesson.id}">${lesson.name}</a>
+        </div>
+      `).join('');
     }
+
+    loadLessons();
   </script>
 </body>
 </html>

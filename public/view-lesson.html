@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Lesson</title>
+</head>
+<body>
+  <h1>Lesson Exercises</h1>
+  <div id="lesson-name"></div>
+  <div id="exercises"></div>
+
+  <script>
+    async function loadLesson() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const lessonId = urlParams.get('lesson_id');  // Get the lesson ID from the URL
+
+      // Fetch the lesson details (you can fetch more information if needed)
+      const lessonRes = await fetch(`/api/lessons?lesson_id=${lessonId}`);
+      const lesson = await lessonRes.json();
+
+      // Display the lesson name (or any other details)
+      const lessonNameContainer = document.getElementById('lesson-name');
+      lessonNameContainer.innerHTML = `<h2>${lesson.name}</h2>`;
+
+      // Fetch the exercises for this lesson
+      const exercisesRes = await fetch(`/api/lessons?lesson_id=${lessonId}`);
+      const exercises = await exercisesRes.json();
+
+      // Display the exercises
+      const exercisesContainer = document.getElementById('exercises');
+      exercisesContainer.innerHTML = exercises.map(exercise => `
+        <div>
+          <h3>${exercise.prompt}</h3>
+          <p>Type: ${exercise.type}</p>
+          <p>Correct Answer: ${exercise.correct_answer}</p>
+          ${exercise.type === 'multiple_choice' ? `<p>Options: ${JSON.parse(exercise.options).join(', ')}</p>` : ''}
+        </div>
+      `).join('');
+    }
+
+    loadLesson();
+  </script>
+</body>
+</html>

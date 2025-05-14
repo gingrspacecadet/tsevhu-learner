@@ -1,8 +1,17 @@
 export async function onRequestGet(context) {
-    const { DB } = context.env;
-    const result = await DB.prepare('SELECT id, title, description FROM lessons').all();
-    return Response.json({ lessons: result.results });
+    const lessonId = context.request.url.searchParams.get('lesson_id');
+  
+    const stmt = context.env.DB.prepare(`
+      SELECT * FROM exercises WHERE lesson_id = ? ORDER BY "order"
+    `).bind(lessonId);
+  
+    const exercises = await stmt.all();
+  
+    return new Response(JSON.stringify(exercises), {
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
+  
   
   export async function onRequestPost(context) {
     const body = await context.request.json();
