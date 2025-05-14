@@ -10,8 +10,14 @@
   <script>
     async function loadLessons() {
       // Fetch lessons from the API
-      const res = await fetch('/api/lessons');
-      const lessons = await res.json();
+      const lessonRes = await fetch(`/api/lessons?lesson_id=${lessonId}`);
+      const text = await lessonRes.text();
+      console.log("Lesson fetch raw response:", text);
+      try {
+        const lesson = JSON.parse(text);
+      } catch (e) {
+        console.error("Failed to parse lesson JSON:", e);
+      }
 
       // Dynamically create a list of lesson links
       const lessonList = document.getElementById('lesson-list');

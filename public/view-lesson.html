@@ -22,8 +22,14 @@
       lessonNameContainer.innerHTML = `<h2>${lesson.name}</h2>`;
 
       // Fetch the exercises for this lesson
-      const exercisesRes = await fetch(`/api/lessons?lesson_id=${lessonId}`);
-      const exercises = await exercisesRes.json();
+      const exercisesRes = await fetch(`/api/lessons/exercises?lesson_id=${lessonId}`);
+      const exercisesText = await exercisesRes.text();
+      console.log("Exercises raw response:", exercisesText);
+      try {
+        const exercises = JSON.parse(exercisesText);
+      } catch (e) {
+        console.error("Failed to parse exercises JSON:", e);
+      }
 
       // Display the exercises
       const exercisesContainer = document.getElementById('exercises');
