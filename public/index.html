@@ -9,19 +9,19 @@
 
   <script>
     async function loadLessons() {
-      // Fetch lessons from the API
-      const lessonRes = await fetch(`/api/lessons`);
-      const text = await lessonRes.text();
-      console.log("Lesson fetch raw response:", text);
+      let lessons = [];
       try {
-        const lesson = JSON.parse(text);
+        const lessonRes = await fetch(`/api/lessons`);
+        const text = await lessonRes.text();
+        console.log("Lesson fetch raw response:", text);
+        lessons = JSON.parse(text);
       } catch (e) {
-        console.error("Failed to parse lesson JSON:", e);
+        console.error("Failed to fetch or parse lesson JSON:", e);
+        return; // Exit early if there's an error
       }
 
-      // Dynamically create a list of lesson links
       const lessonList = document.getElementById('lesson-list');
-      lessonList.innerHTML = lessonList.map(lesson => `
+      lessonList.innerHTML = lessons.map(lesson => `
         <div>
           <a href="view-lesson.html?lesson_id=${lesson.id}">${lesson.name}</a>
         </div>
