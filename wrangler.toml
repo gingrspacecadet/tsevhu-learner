@@ -1,8 +1,7 @@
 name = "tsevhu-learner"
 compatibility_date = "2025-05-14"
 
-[site]
-bucket = "./public"
+pages_build_output_dir = "./public"
 
 [[d1_databases]]
 binding = "DB"
