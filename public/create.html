@@ -1,47 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
   <title>Create Lesson</title>
-  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <main>
-    <h1>Create a Lesson</h1>
-    <form id="lesson-form">
-      <label>
-        Title:
-        <input type="text" name="title" required />
-      </label>
-      <label>
-        Description:
-        <textarea name="description" required></textarea>
-      </label>
-      <button type="submit">Create</button>
-    </form>
-    <div id="status"></div>
-    <a href="/index.html">← Back to Lessons</a>
-  </main>
-  <script type="module">
+  <h1>Create a New Lesson</h1>
+  <form id="lesson-form">
+    <input name="title" placeholder="Title" required />
+    <textarea name="description" placeholder="Description"></textarea>
+    <button type="submit">Create Lesson</button>
+  </form>
+
+  <script>
     document.getElementById('lesson-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const form = e.target;
-      const title = form.title.value.trim();
-      const description = form.description.value.trim();
-
+      const title = e.target.title.value;
+      const description = e.target.description.value;
       const res = await fetch('/api/lessons', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description }),
+        body: JSON.stringify({ title, description })
       });
-
-      const status = document.getElementById('status');
       if (res.ok) {
-        status.textContent = '✅ Lesson created!';
-        form.reset();
+        alert('Lesson created!');
+        e.target.reset();
       } else {
-        const data = await res.json();
-        status.textContent = `❌ Error: ${data.error || 'Unknown error'}`;
+        alert('Failed to create lesson');
       }
     });
   </script>
