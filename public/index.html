@@ -10,7 +10,7 @@
   <script>
     async function loadLessons() {
       // Fetch lessons from the API
-      const lessonRes = await fetch(`/api/lessons?lesson_id=${lessonId}`);
+      const lessonRes = await fetch(`/api/lessons`);
       const text = await lessonRes.text();
       console.log("Lesson fetch raw response:", text);
       try {

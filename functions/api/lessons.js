@@ -1,9 +1,8 @@
 export async function onRequestGet(context) {
-    const lessonId = context.request.url.searchParams.get('lesson_id');
   
     const stmt = context.env.DB.prepare(`
-        SELECT * FROM exercises WHERE lesson_id = ? ORDER BY "order"
-    `).bind(lessonId);
+        SELECT * FROM exercises ORDER BY "order"
+    `);
   
     const exercises = await stmt.all();
   
