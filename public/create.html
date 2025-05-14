@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Lesson</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main>
+    <h1>Create a Lesson</h1>
+    <form id="lesson-form">
+      <label>
+        Title:
+        <input type="text" name="title" required />
+      </label>
+      <label>
+        Description:
+        <textarea name="description" required></textarea>
+      </label>
+      <button type="submit">Create</button>
+    </form>
+    <div id="status"></div>
+    <a href="/index.html">← Back to Lessons</a>
+  </main>
+  <script type="module">
+    document.getElementById('lesson-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const title = form.title.value.trim();
+      const description = form.description.value.trim();
+
+      const res = await fetch('/api/lessons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description }),
+      });
+
+      const status = document.getElementById('status');
+      if (res.ok) {
+        status.textContent = '✅ Lesson created!';
+        form.reset();
+      } else {
+        const data = await res.json();
+        status.textContent = `❌ Error: ${data.error || 'Unknown error'}`;
+      }
+    });
+  </script>
+</body>
+</html>

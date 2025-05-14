@@ -1,4 +1,10 @@
-export async function onRequestPost(context) {
+export async function onRequestGet(context) {
+    const { DB } = context.env;
+    const result = await DB.prepare('SELECT id, title, description FROM lessons').all();
+    return Response.json({ lessons: result.results });
+  }
+  
+  export async function onRequestPost(context) {
     const { DB } = context.env;
     const body = await context.request.json();
   

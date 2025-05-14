@@ -2,30 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Lesson</title>
+  <title>Lesson List</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <main>
-    <h1>Create a Lesson</h1>
-    <form id="lesson-form">
-      <label>
-        Title:
-        <input type="text" name="title" required />
-      </label>
-      <br />
-      <label>
-        Description:
-        <textarea name="description" required></textarea>
-      </label>
-      <br />
-      <button type="submit">Create Lesson</button>
-    </form>
-
-    <div id="status"></div>
+    <h1>Lessons</h1>
+    <ul id="lesson-list">Loading...</ul>
+    <a href="/create.html">➕ Create a New Lesson</a>
   </main>
+  <script type="module">
+    const list = document.getElementById('lesson-list');
 
-  <script src="/script.js" type="module"></script>
+    const res = await fetch('/api/lessons');
+    const data = await res.json();
+
+    if (Array.isArray(data.lessons)) {
+      list.innerHTML = '';
+      data.lessons.forEach(lesson => {
+        const li = document.createElement('li');
+        li.textContent = `${lesson.title}: ${lesson.description}`;
+        list.appendChild(li);
+      });
+    } else {
+      list.textContent = 'Failed to load lessons.';
+    }
+  </script>
 </body>
 </html>
