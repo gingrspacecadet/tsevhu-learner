@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Tsevhu Learner</title>
+</head>
+<body>
+	<h1>Lessons</h1>
+	<ul id="lessons"></ul>
+
+	<section id="exercises"></section>
+
+	<script>
+		async function loadLessons() {
+			const res = await fetch("/api/lessons");
+			const lessons = await res.json();
+
+			const list = document.getElementById("lessons");
+			list.innerHTML = "";
+
+			lessons.forEach(lesson => {
+				const li = document.createElement("li");
+				li.textContent = lesson.title;
+				li.onclick = () => loadExercises(lesson.id);
+				list.appendChild(li);
+			});
+		}
+
+		async function loadExercises(lessonId) {
+			const res = await fetch(`/api/exercises?lessonId=${lessonId}`);
+			const exercises = await res.json();
+
+			const container = document.getElementById("exercises");
+			container.innerHTML = "<h2>Exercises</h2>";
+
+			exercises.forEach(ex => {
+				const div = document.createElement("div");
+				div.textContent = `[${ex.type}] ${ex.prompt}`;
+				container.appendChild(div);
+			});
+		}
+
+		loadLessons();
+	</script>
+</body>
+</html>

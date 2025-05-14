@@ -1,0 +1,11 @@
+name = "tsevhu-learner"
+compatibility_date = "2025-05-14"
+
+[site]
+bucket = "./public"
+entry-point = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tsevhu"
+database_id = "9b154123-fac8-4497-a7ef-89283c68321c"
