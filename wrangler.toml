@@ -3,7 +3,6 @@ compatibility_date = "2025-05-14"
 
 [site]
 bucket = "./public"
-entry-point = "."
 
 [[d1_databases]]
 binding = "DB"
