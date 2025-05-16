@@ -7,8 +7,16 @@
   <h1>Lesson Exercises</h1>
   <div id="lesson-name"></div>
   <div id="exercises"></div>
+  <div id="new-exercise"></div>
 
   <script>
+    async function newExercise() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const lessonId = urlParams.get('lesson_id');  // Get the lesson ID from the URL
+
+      const createExercise = document.getElementById('new-exercise');
+      createExercise.innerHTML = `<a href="${lessonId}">Create Exercise</a>`;
+    }
     async function loadLesson() {
       const urlParams = new URLSearchParams(window.location.search);
       const lessonId = urlParams.get('lesson_id');  // Get the lesson ID from the URL
