@@ -7,9 +7,8 @@ export async function onRequestGet(context) {
         const stmt = context.env.DB.prepare(`
             SELECT * FROM lessons WHERE id = ?
         `);
-        const boundStmt = await stmt.bind(lessonId);
 
-        const lesson = await boundStmt.get();
+        const lesson = await stmt.get(lessonId);
 
         if (!lesson) {
             return new Response(JSON.stringify({ error: "Lesson not found" }), {
@@ -46,9 +45,8 @@ export async function onRequestPost(context) {
     const stmt = context.env.DB.prepare(`
         INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)
     `);
-    const boundStmt = await stmt.bind(id, body.title, body.description);
 
-    await boundStmt.run();
+    await stmt.run(id, body.title, body.description);
 
     return new Response(JSON.stringify({ id }), {
         headers: { 'Content-Type': 'application/json' },
