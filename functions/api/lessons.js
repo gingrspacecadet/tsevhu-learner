@@ -5,7 +5,7 @@ export async function onRequestGet(context) {
     if (lessonId) {
         // Fetch single lesson by id
         const stmt = context.env.DB.prepare(`SELECT * FROM lessons WHERE id = ?`);
-        const result = await stmt.all([lessonId]);
+        const result = await stmt.bind(lessonId).all();
         const lesson = result.results[0] || null;
 
         if (!lesson) {
