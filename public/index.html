@@ -30,6 +30,11 @@
           throw new Error(`HTTP error! status: ${lessonRes.status}`);
         }
         lessons = await lessonRes.json();
+        console.log("Fetched lessons:", lessons);
+        if (!Array.isArray(lessons)) {
+          console.error("Lessons is not an array:", lessons);
+          lessons = [];
+        }
       } catch (e) {
         console.error("Failed to fetch or parse lesson JSON:", e);
         return; // Exit early if there's an error
