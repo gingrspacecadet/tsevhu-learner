@@ -9,14 +9,12 @@ export async function onRequestGet(context) {
         });
     }
 
-    const stmt = context.env.DB.prepare(`
+    const exercises = await context.env.DB.prepare(`
         SELECT * FROM exercises WHERE lesson_id = ? ORDER BY "order"
-    `).bind(lessonId);
-
-    const exercises = await stmt.all();
+    `).bind(lessonId).all();
 
     // Parse metadata and add correct_answer to top-level object
-    const parsedExercises = exercises.map(ex => {
+    const parsedExercises = exercises.results.map(ex => {
         let metadata = {};
         try {
             metadata = JSON.parse(ex.metadata);
