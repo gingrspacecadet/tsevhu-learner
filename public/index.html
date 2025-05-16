@@ -29,8 +29,7 @@
         if (!lessonRes.ok) {
           throw new Error(`HTTP error! status: ${lessonRes.status}`);
         }
-        const data = await lessonRes.json();
-        lessons = data.results || [];
+        lessons = await lessonRes.json();
       } catch (e) {
         console.error("Failed to fetch or parse lesson JSON:", e);
         return; // Exit early if there's an error

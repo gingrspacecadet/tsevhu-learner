@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Exercise</title>
+</head>
+<body>
+  <h1>Exercise Details</h1>
+  <div id="exercise-details"></div>
+
+  <script>
+    async function loadExercise() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const lessonId = urlParams.get('lesson_id');
+      const exerciseId = urlParams.get('exercise_id');
+
+      if (!lessonId || !exerciseId) {
+        document.getElementById('exercise-details').innerText = 'Missing lesson_id or exercise_id in URL';
+        return;
+      }
+
+      // Fetch the exercise details
+      const exerciseRes = await fetch(`/api/exercises?lesson_id=${lessonId}`);
+      let exercises = [];
+      try {
+        exercises = await exerciseRes.json();
+      } catch (e) {
+        console.error("Failed to parse exercises JSON:", e);
+        document.getElementById('exercise-details').innerText = 'Failed to load exercise data';
+        return;
+      }
+
+      const exercise = exercises.find(ex => ex.id === exerciseId);
+      if (!exercise) {
+        document.getElementById('exercise-details').innerText = 'Exercise not found';
+        return;
+      }
+
+      // Display exercise details
+      let html = `<h2>${exercise.prompt}</h2>`;
+      html += `<p>Type: ${exercise.type}</p>`;
+      html += `<p>Correct Answer: ${exercise.correct_answer}</p>`;
+      if (exercise.type === 'multiple_choice') {
+        const options = JSON.parse(exercise.options);
+        html += `<p>Options: ${options.join(', ')}</p>`;
+      }
+
+      document.getElementById('exercise-details').innerHTML = html;
+    }
+
+    loadExercise();
+  </script>
+</body>
+</html>

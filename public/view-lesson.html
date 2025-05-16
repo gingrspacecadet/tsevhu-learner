@@ -13,32 +13,28 @@
       const urlParams = new URLSearchParams(window.location.search);
       const lessonId = urlParams.get('lesson_id');  // Get the lesson ID from the URL
 
-      // Fetch the lesson details (you can fetch more information if needed)
+      // Fetch the lesson details
       const lessonRes = await fetch(`/api/lessons?lesson_id=${lessonId}`);
       const lesson = await lessonRes.json();
 
-      // Display the lesson name (or any other details)
+      // Display the lesson name
       const lessonNameContainer = document.getElementById('lesson-name');
-      lessonNameContainer.innerHTML = `<h2>${lesson.name}</h2>`;
+      lessonNameContainer.innerHTML = `<h2>${lesson.title}</h2>`;
 
       // Fetch the exercises for this lesson
-      const exercisesRes = await fetch(`/api/lessons/exercises?lesson_id=${lessonId}`);
-      const exercisesText = await exercisesRes.text();
-      console.log("Exercises raw response:", exercisesText);
+      const exercisesRes = await fetch(`/api/exercises?lesson_id=${lessonId}`);
+      let exercises = [];
       try {
-        const exercises = JSON.parse(exercisesText);
+        exercises = await exercisesRes.json();
       } catch (e) {
         console.error("Failed to parse exercises JSON:", e);
       }
 
-      // Display the exercises
+      // Display the exercises as links
       const exercisesContainer = document.getElementById('exercises');
       exercisesContainer.innerHTML = exercises.map(exercise => `
         <div>
-          <h3>${exercise.prompt}</h3>
-          <p>Type: ${exercise.type}</p>
-          <p>Correct Answer: ${exercise.correct_answer}</p>
-          ${exercise.type === 'multiple_choice' ? `<p>Options: ${JSON.parse(exercise.options).join(', ')}</p>` : ''}
+          <a href="view-exercise.html?lesson_id=${lessonId}&exercise_id=${exercise.id}">${exercise.prompt}</a>
         </div>
       `).join('');
     }
