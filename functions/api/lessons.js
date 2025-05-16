@@ -12,12 +12,17 @@ export async function onRequestGet(context) {
             headers: { 'Content-Type': 'application/json' },
         });
     } else {
-        // Return all lessons
+        // Return all lessons wrapped in success, meta, results
         const stmt = context.env.DB.prepare(`
             SELECT * FROM lessons ORDER BY title
         `);
         const lessons = await stmt.all();
-        return new Response(JSON.stringify(lessons), {
+        const response = {
+            success: true,
+            meta: { total: lessons.length },
+            results: lessons
+        };
+        return new Response(JSON.stringify(response), {
             headers: { 'Content-Type': 'application/json' },
         });
     }
