@@ -15,7 +15,19 @@ export async function onRequestGet(context) {
 
     const exercises = await stmt.all();
 
-    return new Response(JSON.stringify(exercises), {
+    // Parse metadata and add correct_answer to top-level object
+    const parsedExercises = exercises.map(ex => {
+        let metadata = {};
+        try {
+            metadata = JSON.parse(ex.metadata);
+        } catch (e) {}
+        return {
+            ...ex,
+            correct_answer: metadata.correct_answer || null
+        };
+    });
+
+    return new Response(JSON.stringify(parsedExercises), {
         headers: { 'Content-Type': 'application/json' },
     });
 }
@@ -31,11 +43,16 @@ export async function onRequestPost(context) {
     if (body.options) {
       options = JSON.parse(body.options);
     }
+
+    // Store correct_answer inside metadata
+    const metadata = {
+        correct_answer: body.correct_answer || null
+    };
   
     const stmt = context.env.DB.prepare(`
       INSERT INTO exercises (id, lesson_id, type, prompt, options, metadata, "order")
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(id, lesson_id, body.type, body.prompt, JSON.stringify(options), JSON.stringify({}), 0);
+    `).bind(id, lesson_id, body.type, body.prompt, JSON.stringify(options), JSON.stringify(metadata), 0);
   
     await stmt.run();
   
