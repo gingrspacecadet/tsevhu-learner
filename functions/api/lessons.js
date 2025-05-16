@@ -5,7 +5,7 @@ export async function onRequestGet(context) {
     if (lessonId) {
         // Fetch single lesson by id
         const stmt = context.env.DB.prepare(`SELECT * FROM lessons WHERE id = ?`);
-        const result = await stmt.all(lessonId);
+        const result = await stmt.all([lessonId]);
         const lesson = result.results[0] || null;
 
         if (!lesson) {
@@ -38,7 +38,7 @@ export async function onRequestPost(context) {
     const id = crypto.randomUUID();
 
     const stmt = context.env.DB.prepare(`INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)`);
-    await stmt.run(id, body.title, body.description);
+    await stmt.run([id, body.title, body.description]);
 
     return new Response(JSON.stringify({ id }), {
         headers: { 'Content-Type': 'application/json' },
