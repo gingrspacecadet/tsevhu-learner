@@ -15,7 +15,7 @@
       const lessonId = urlParams.get('lesson_id');  // Get the lesson ID from the URL
 
       const createExercise = document.getElementById('new-exercise');
-      createExercise.innerHTML = `<a href="${lessonId}">Create Exercise</a>`;
+      createExercise.innerHTML = `<a href="create-exercise/${lessonId}">Create Exercise</a>`;
     }
     async function loadLesson() {
       const urlParams = new URLSearchParams(window.location.search);
