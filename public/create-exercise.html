@@ -30,10 +30,18 @@
   </form>
 
   <script>
+    // Parse lesson_id from URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const lessonId = urlParams.get('lesson_id');
+
     document.getElementById('exercise-form').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const lessonId = 'your-lesson-id';  // Replace with dynamic lesson ID
+      if (!lessonId) {
+        alert('Missing lesson ID in URL');
+        return;
+      }
+
       const type = e.target.type.value;
       const prompt = e.target.prompt.value;
       const correct_answer = e.target.correct_answer.value;
