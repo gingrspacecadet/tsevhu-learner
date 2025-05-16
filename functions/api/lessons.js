@@ -6,9 +6,10 @@ export async function onRequestGet(context) {
         // Fetch single lesson by id
         const stmt = context.env.DB.prepare(`
             SELECT * FROM lessons WHERE id = ?
-        `).bind(lessonId);
+        `);
+        const boundStmt = await stmt.bind(lessonId);
 
-        const lesson = await stmt.get();
+        const lesson = await boundStmt.get();
 
         if (!lesson) {
             return new Response(JSON.stringify({ error: "Lesson not found" }), {
@@ -44,9 +45,10 @@ export async function onRequestPost(context) {
 
     const stmt = context.env.DB.prepare(`
         INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)
-    `).bind(id, body.title, body.description);
+    `);
+    const boundStmt = await stmt.bind(id, body.title, body.description);
 
-    await stmt.run();
+    await boundStmt.run();
 
     return new Response(JSON.stringify({ id }), {
         headers: { 'Content-Type': 'application/json' },
