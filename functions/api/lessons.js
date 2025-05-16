@@ -1,19 +1,41 @@
 export async function onRequestGet(context) {
-    // Query lessons table, not exercises
-    const stmt = context.env.DB.prepare(`
-        SELECT * FROM lessons ORDER BY title
-    `);
+    const url = new URL(context.request.url);
+    const lessonId = url.searchParams.get('lesson_id');
 
-    const lessons = await stmt.all();
+    if (lessonId) {
+        // Fetch single lesson by id
+        const stmt = context.env.DB.prepare(`
+            SELECT * FROM lessons WHERE id = ?
+        `).bind(lessonId);
 
-    // Return properly formatted JSON response
-    return new Response(JSON.stringify({
-        success: true,
-        meta: {},
-        results: lessons.results || []
-    }), {
-        headers: { 'Content-Type': 'application/json' },
-    });
+        const lesson = await stmt.get();
+
+        if (!lesson) {
+            return new Response(JSON.stringify({ error: "Lesson not found" }), {
+                status: 404,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
+        return new Response(JSON.stringify(lesson), {
+            headers: { 'Content-Type': 'application/json' },
+        });
+    } else {
+        // Fetch all lessons
+        const stmt = context.env.DB.prepare(`
+            SELECT * FROM lessons ORDER BY title
+        `);
+
+        const lessons = await stmt.all();
+
+        return new Response(JSON.stringify({
+            success: true,
+            meta: {},
+            results: lessons.results || []
+        }), {
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
 }
 
 export async function onRequestPost(context) {
