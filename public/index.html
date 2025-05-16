@@ -31,7 +31,7 @@
         }
         const data = await lessonRes.json();
         console.log("Fetched lessons data:", data);
-        lessons = data.results || [];
+        lessons = Array.isArray(data.results) ? data.results : [];
       } catch (e) {
         console.error("Failed to fetch or parse lesson JSON:", e);
         return; // Exit early if there's an error
