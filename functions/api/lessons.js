@@ -4,9 +4,9 @@ export async function onRequestGet(context) {
 
     if (lessonId) {
         // Fetch single lesson by id
-        const lesson = await context.env.DB
-            .prepare(`SELECT * FROM lessons WHERE id = ?`)
-            .get(lessonId);
+        const stmt = context.env.DB.prepare(`SELECT * FROM lessons WHERE id = ?`);
+        const result = await stmt.all(lessonId);
+        const lesson = result.results[0] || null;
 
         if (!lesson) {
             return new Response(JSON.stringify({ error: "Lesson not found" }), {
@@ -20,9 +20,8 @@ export async function onRequestGet(context) {
         });
     } else {
         // Fetch all lessons
-        const lessons = await context.env.DB
-            .prepare(`SELECT * FROM lessons ORDER BY title`)
-            .all();
+        const stmt = context.env.DB.prepare(`SELECT * FROM lessons ORDER BY title`);
+        const lessons = await stmt.all();
 
         return new Response(JSON.stringify({
             success: true,
@@ -38,9 +37,8 @@ export async function onRequestPost(context) {
     const body = await context.request.json();
     const id = crypto.randomUUID();
 
-    await context.env.DB
-        .prepare(`INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)`)
-        .run(id, body.title, body.description);
+    const stmt = context.env.DB.prepare(`INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)`);
+    await stmt.run(id, body.title, body.description);
 
     return new Response(JSON.stringify({ id }), {
         headers: { 'Content-Type': 'application/json' },
