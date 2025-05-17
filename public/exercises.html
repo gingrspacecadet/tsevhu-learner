@@ -45,7 +45,7 @@
   
         html += `<div>`;
         options.forEach((option, i) => {
-          html += `<button onclick="answer(${i}, ${correctIndex})">${option}</button>`;
+          html += `<button onclick="answer(${i}, '${correctIndex}')">${option}</button>`;
         });
         html += `</div>`;
       }
