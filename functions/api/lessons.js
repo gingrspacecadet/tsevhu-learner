@@ -1,5 +1,3 @@
-import { log } from "console";
-
 export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const lessonId = url.searchParams.get('lesson_id');
