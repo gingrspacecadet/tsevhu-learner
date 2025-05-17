@@ -47,7 +47,7 @@ export async function onRequest({ request, env }) {
     const exercisesQuery = `
       SELECT id AS exerciseId, prompt -- select whatever columns you want here
         FROM exercises
-       WHERE lessonId = ?
+       WHERE lesson_id = ?
     `;
     const exercisesResult = await env.DB.prepare(exercisesQuery).bind(lessonId).all();
   
