@@ -98,6 +98,16 @@
           btn.addEventListener('click', () => {
             if (opt === correct) {
               btn.style.backgroundColor = 'lightgreen';
+              fetch('/api/progress', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  lessonId: lessonId,
+                  exerciseId: exerciseId
+                })
+              });
             } else {
               btn.style.backgroundColor = 'salmon';
             }
