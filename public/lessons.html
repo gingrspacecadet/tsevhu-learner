@@ -14,43 +14,49 @@
   <script>
     async function newExercise() {
       const urlParams = new URLSearchParams(window.location.search);
-      const lessonId = urlParams.get('lesson_id');  // Get the lesson ID from the URL
-
-      const createExercise = document.getElementById('new-exercise');
-      createExercise.innerHTML = `<a href="create-exercise?lesson_id=${lessonId}">Create Exercise</a>`;
+      const lessonId = urlParams.get('lesson_id');
+      document.getElementById('new-exercise').innerHTML =
+        `<a href="create-exercise?lesson_id=${lessonId}">Create Exercise</a>`;
     }
+
     async function loadLesson() {
       const urlParams = new URLSearchParams(window.location.search);
-      const lessonId = urlParams.get('lesson_id');  // Get the lesson ID from the URL
+      const lessonId = urlParams.get('lesson_id');
 
-      // Fetch the lesson details
-      const lessonRes = await fetch(`/api/lessons?lesson_id=${lessonId}`);
-      const lesson = await lessonRes.json();
+      // 1) Fetch lesson details
+      const lessonRes = await fetch(`/api/lessons?lessonId=${lessonId}`);
+      const lessonData = await lessonRes.json();
+      document.getElementById('lesson-name').innerHTML =
+        `<h2>${lessonData.title}</h2>`;
 
-      // Display the lesson name
-      const lessonNameContainer = document.getElementById('lesson-name');
-      lessonNameContainer.innerHTML = `<h2>${lesson.title}</h2>`;
-
-      // Fetch the exercises for this lesson
-      const exercisesRes = await fetch(`/api/exercises?lesson_id=${lessonId}`);
+      // 2) Fetch exercises for this lesson
+      const exercisesRes = await fetch(`/api/exercises?lessonId=${lessonId}`);
       let exercises = [];
       try {
-        exercises = await exercisesRes.json();
+        const data = await exercisesRes.json();
+        // data should be { success: true, exercises: [...] }
+        if (data.success && Array.isArray(data.exercises)) {
+          exercises = data.exercises;
+        } else {
+          console.warn('Unexpected exercises payload', data);
+        }
       } catch (e) {
-        console.error("Failed to parse exercises JSON:", e);
+        console.error('Failed to parse exercises JSON:', e);
       }
 
-      // Display the exercises as links
-      const exercisesContainer = document.getElementById('exercises');
-      exercisesContainer.innerHTML = exercises.map(exercise => `
-        <div role="button"
-          tabindex="0"
-          onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${exercise.id}'"
-          onkeydown="if(event.key === 'Enter' || event.key === ' ') this.click();"
-          id="exercise">
-            <h2>${exercise.prompt}</h2>
-        </div>
-      `).join('');
+      // 3) Render the exercises as clickable divs
+      const container = document.getElementById('exercises');
+      container.innerHTML = exercises
+        .map(ex => `
+          <div role="button"
+               tabindex="0"
+               onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${ex.exerciseId}'"
+               onkeydown="if(event.key==='Enter'||event.key===' ') this.click();"
+               class="exercise-card">
+            <h2>${ex.prompt}</h2>
+          </div>
+        `)
+        .join('');
     }
 
     newExercise();
