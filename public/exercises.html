@@ -41,7 +41,7 @@
       let html = `<h2>${exercise.prompt}</h2>`;
       if (exercise.type === 'multiple_choice') {
         const options = JSON.parse(exercise.options); // array of strings
-        const correctIndex = exercise.correct_index; // assuming your API includes this
+        const correctIndex = exercise.correct_answer; // assuming your API includes this
   
         html += `<div>`;
         options.forEach((option, i) => {
