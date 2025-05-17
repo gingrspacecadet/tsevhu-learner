@@ -17,6 +17,7 @@ export async function onRequestGet(context) {
             });
         }
 
+        console.log(lesson);
         console.log(result);
 
         return new Response(JSON.stringify(lesson), {
