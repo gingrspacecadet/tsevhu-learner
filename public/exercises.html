@@ -40,7 +40,7 @@
       let html = `<h2>${exercise.prompt}</h2>`;
       if (exercise.type === 'multiple_choice') {
         const options = JSON.parse(exercise.options);
-        html += `<div><div id="option">${options.join('</div><div id="option">')}</div></div>`;
+        html += `<div><button id="option">${options.join('</button><button id="option">')}</button></div>`;
       }
 
       document.getElementById('exercise-details').innerHTML = html;
