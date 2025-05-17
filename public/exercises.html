@@ -30,8 +30,6 @@
         document.getElementById('exercise-details').innerText = 'Failed to load exercise data';
         return;
       }
-  
-      console.log(exercise);
 
       const exercise = exercises.find(ex => ex.id === exerciseId);
       if (!exercise) {
@@ -39,6 +37,8 @@
         return;
       }
   
+      console.log(exercise);
+
       // Display exercise details
       let html = `<h2>${exercise.prompt}</h2>`;
       if (exercise.type === 'multiple_choice') {
