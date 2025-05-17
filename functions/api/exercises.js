@@ -4,7 +4,7 @@ export async function onRequest({ request, env }) {
     }
   
     const url = new URL(request.url);
-    const lessonId = url.searchParams.get('lessonId');
+    const lessonId = url.searchParams.get('lesson_id');
     if (!lessonId) {
       return new Response(
         JSON.stringify({ success: false, error: 'Missing lessonId' }),
