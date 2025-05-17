@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lesson List</title>
+  <link rel="stylesheet" href="../styles/login.css"/>
+</head>
+<body>
+  <h1>Login</h1>
+  <div id="auth">
+    <!-- 1) Added id="loginForm" -->
+    <form id="loginForm">
+      <!-- 2) Added name attributes -->
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  
+  <script>
+    const form = document.getElementById('loginForm');
+
+    form.addEventListener('submit', async function(event) {
+      // Prevent the default full-page reload
+      event.preventDefault();
+
+      // Read values by their name
+      const username = form.elements['username'].value;
+      const password = form.elements['password'].value;
+
+      try {
+        // Send to your API endpoint
+        const response = await fetch('../api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          // Stringify your payload
+          body: JSON.stringify({ username, password })
+        });
+
+        // Parse JSON response
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log('Login successful:', data);
+          // e.g. redirect on success:
+          // window.location.href = '/dashboard';
+        } else {
+          console.error('Login failed:', data);
+          // show error to user, e.g.:
+          // document.getElementById('error').textContent = data.message;
+        }
+      } catch (err) {
+        console.error('Network or server error:', err);
+      }
+    });
+  </script>
+</body>
+</html>

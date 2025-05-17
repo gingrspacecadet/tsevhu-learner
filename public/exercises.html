@@ -109,7 +109,7 @@
       // 6) attach hover behavior to prompt-word spans (native tooltip only)
       document.querySelectorAll('.trans-word').forEach(span => {
         const key = span.dataset.word;  // already lowercased
-        span.style.cursor = 'help';
+        span.style.cursor = 'pointer';
   
         span.addEventListener('mouseenter', () => {
           const matches = translationsArray
