@@ -49,8 +49,8 @@ export async function onRequestPost(context) {
     const stmt = context.env.DB.prepare(`INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)`);
     
     try {
-        // Bind parameters and execute the statement
-        await stmt.bind([id, body.title, body.description]).run();
+        // Bind parameters individually
+        await stmt.bind(id, body.title, body.description).run();
     } catch (error) {
         console.error("Database error:", error); // Log the error
         return new Response(JSON.stringify({ error: "Database operation failed." }), {
@@ -63,3 +63,4 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' },
     });
 }
+
