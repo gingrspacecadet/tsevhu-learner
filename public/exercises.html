@@ -14,12 +14,12 @@
       const urlParams = new URLSearchParams(window.location.search);
       const lessonId = urlParams.get('lesson_id');
       const exerciseId = urlParams.get('exercise_id');
-
+  
       if (!lessonId || !exerciseId) {
         document.getElementById('exercise-details').innerText = 'Missing lesson_id or exercise_id in URL';
         return;
       }
-
+  
       // Fetch the exercise details
       const exerciseRes = await fetch(`/api/exercises?lesson_id=${lessonId}`);
       let exercises = [];
@@ -30,25 +30,40 @@
         document.getElementById('exercise-details').innerText = 'Failed to load exercise data';
         return;
       }
-
+  
       const exercise = exercises.find(ex => ex.id === exerciseId);
       if (!exercise) {
         document.getElementById('exercise-details').innerText = 'Exercise not found';
         return;
       }
-
+  
       // Display exercise details
       let html = `<h2>${exercise.prompt}</h2>`;
       if (exercise.type === 'multiple_choice') {
-        const options = JSON.parse(exercise.options);
-        html += `<div><button id="option">${options.join('</button><button id="option">')}</button></div>`;
+        const options = JSON.parse(exercise.options); // array of strings
+        const correctIndex = exercise.correct_index; // assuming your API includes this
+  
+        html += `<div>`;
+        options.forEach((option, i) => {
+          html += `<button onclick="answer(${i}, ${correctIndex})">${option}</button>`;
+        });
+        html += `</div>`;
       }
-
+  
       document.getElementById('exercise-details').innerHTML = html;
       document.getElementById('back').innerHTML = `<a href="lessons?lesson_id=${lessonId}">Back</a>`;
     }
-
+  
+    function answer(selectedIndex, correctIndex) {
+      if (selectedIndex === correctIndex) {
+        alert("✅ Correct!");
+        // You could also load the next question, mark it as complete, etc.
+      } else {
+        alert("❌ Incorrect. Try again!");
+      }
+    }
+  
     loadExercise();
-  </script>
+  </script>  
 </body>
 </html>
