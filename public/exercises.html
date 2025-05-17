@@ -13,67 +13,75 @@
 
   <script>
     async function loadExercise() {
-      // 1) fetch translations & build lookups
+      // 1) load translations.json → build English→Conlang lookup
       const translationsArray = await fetch('translations.json')
-        .then(res => res.json())
-        .catch(e => { console.error('translations.json load failed', e); return []; });
-
-      // conlang → English
-      const clToEn = Object.fromEntries(
-        translationsArray.map(({conlang, translation}) => [conlang, translation])
-      );
-      // English → conlang (invert)
+        .then(r => r.json())
+        .catch(e => { console.error('Failed to load translations.json', e); return []; });
+  
       const enToCl = Object.fromEntries(
-        translationsArray.map(({conlang, translation}) => [translation, conlang])
+        translationsArray.map(({conlang, translation}) => [translation.toLowerCase(), conlang])
       );
-
-      // 2) fetch the exercise data
-      const urlParams = new URLSearchParams(window.location.search);
-      const lessonId = urlParams.get('lesson_id');
-      const exerciseId = urlParams.get('exercise_id');
+  
+      // 2) load exercise data
+      const params = new URLSearchParams(window.location.search);
+      const lessonId = params.get('lesson_id');
+      const exerciseId = params.get('exercise_id');
       if (!lessonId || !exerciseId) {
         document.getElementById('exercise-details')
           .innerText = 'Missing lesson_id or exercise_id in URL';
         return;
       }
-
+  
       const exercises = await fetch(`/api/exercises?lesson_id=${lessonId}`)
         .then(r => r.json())
         .catch(e => {
-          console.error('exercises API failed', e);
+          console.error('Failed to load exercises', e);
           document.getElementById('exercise-details')
             .innerText = 'Failed to load exercise data';
           return [];
         });
-
+  
       const exercise = exercises.find(ex => ex.id === exerciseId);
       if (!exercise) {
-        document.getElementById('exercise-details').innerText = 'Exercise not found';
+        document.getElementById('exercise-details')
+          .innerText = 'Exercise not found';
         return;
       }
-
-      // 3) render prompt & buttons
-      const container = document.getElementById('exercise-details');
-      container.innerHTML = `
-        <h2>${exercise.prompt}</h2>
-        <div id="options-container"></div>`;
-      document.getElementById('back')
-        .innerHTML = `<a href="lessons?lesson_id=${lessonId}">Back</a>`;
-
+  
+      // 3) render prompt, splitting on whitespace but preserving it
+      const rawPrompt = exercise.prompt;
+      // split into words *and* whitespace chunks
+      const tokens = rawPrompt.split(/(\s+)/);
+      const promptHtml = tokens.map(token => {
+        // if it's purely whitespace, leave it alone
+        if (/^\s+$/.test(token)) return token;
+        // strip trailing punctuation for lookup
+        const key = token.replace(/^[“"‘'([{]+|[.,!?:;”"’'\])}]+$/g, '').toLowerCase();
+        const cl = enToCl[key] || '(no entry)';
+        return `<span class="trans-word" data-word="${key}" title="${cl}">${token}</span>`;
+      }).join('');
+  
+      // 4) put it into the page
+      const details = document.getElementById('exercise-details');
+      details.innerHTML = `
+        <h2>${promptHtml}</h2>
+        <div id="options-container"></div>
+      `;
+      document.getElementById('back').innerHTML =
+        `<a href="lessons?lesson_id=${lessonId}">Back</a>`;
+  
+      // 5) render multiple-choice buttons (unchanged)
       if (exercise.type === 'multiple_choice') {
         const options = JSON.parse(exercise.options);
-        const correctAnswer = exercise.correct_answer;
+        const correct = exercise.correct_answer;
         const statusDiv = document.getElementById('status');
         const optsCon = document.getElementById('options-container');
-
-        options.forEach((option, i) => {
+  
+        options.forEach(opt => {
           const btn = document.createElement('button');
-          btn.textContent = option;
-          btn.title = clToEn[option] || '';  // native tooltip
-
-          // click to answer
+          btn.textContent = opt;
           btn.addEventListener('click', () => {
-            if (option === correctAnswer) {
+            if (opt === correct) {
               btn.style.backgroundColor = 'lightgreen';
               statusDiv.textContent = '✅ Correct!';
             } else {
@@ -81,40 +89,26 @@
               statusDiv.textContent = '❌ Incorrect. Try again!';
             }
           });
-
           optsCon.appendChild(btn);
         });
       }
-
-      // 4) wire up custom <translate-english> and <translate-tsevhu> tags
+  
+      // 6) attach hover behavior to all the prompt-word spans
       const statusDiv = document.getElementById('status');
-
-      // helper to attach hover behavior
-      function attachTagBehavior(tagName, lookupMap) {
-        document
-          .querySelectorAll(tagName)
-          .forEach(el => {
-            const key = el.textContent.trim();
-            const translation = lookupMap[key] || '(no entry)';
-            el.title = translation;  // native tooltip
-            el.style.cursor = 'help';
-
-            el.addEventListener('mouseenter', () => {
-              statusDiv.textContent = translation;
-            });
-            el.addEventListener('mouseleave', () => {
-              statusDiv.textContent = '';
-            });
-          });
-      }
-
-      // <translate-english> shows Conlang on hover
-      attachTagBehavior('translate-english', enToCl);
-      // <translate-tsevhu> shows English on hover
-      attachTagBehavior('translate-tsevhu', clToEn);
+      document.querySelectorAll('.trans-word').forEach(span => {
+        const wordKey = span.dataset.word;
+        span.style.cursor = 'help';
+        span.addEventListener('mouseenter', () => {
+          statusDiv.textContent = span.title; // our tooltip text
+        });
+        span.addEventListener('mouseleave', () => {
+          statusDiv.textContent = '';
+        });
+      });
     }
-
+  
     loadExercise();
   </script>
+  
 </body>
 </html>
