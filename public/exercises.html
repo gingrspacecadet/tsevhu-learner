@@ -91,31 +91,39 @@
         const options = JSON.parse(exercise.options);
         const correct = exercise.correct_answer;
         const optsCon = document.getElementById('options-container');
-  
+
         options.forEach(opt => {
           const btn = document.createElement('button');
           btn.textContent = opt;
-          btn.addEventListener('click', () => {
-            if (opt === correct) {
-              btn.style.backgroundColor = 'lightgreen';
-              fetch('/api/progress', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  lessonId: lessonId,
-                  exerciseId: exerciseId
-                })
-              });
-            } else {
-              btn.style.backgroundColor = 'salmon';
-            }
-          });
+
+          if (exercise.completed) {
+            // Exercise completed: no click, green background
+            btn.style.backgroundColor = 'lightgreen';
+            btn.disabled = true;  // also disables hover and clicks
+            btn.style.cursor = 'default';
+          } else {
+            // Not completed: add click listener as before
+            btn.addEventListener('click', () => {
+              if (opt === correct) {
+                btn.style.backgroundColor = 'lightgreen';
+                fetch('/api/progress', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    lessonId: lessonId,
+                    exerciseId: exerciseId
+                  })
+                });
+              } else {
+                btn.style.backgroundColor = 'salmon';
+              }
+            });
+          }
+
           optsCon.appendChild(btn);
         });
       }
-  
+
       // 6) attach hover behavior to prompt-word spans (native tooltip only)
       document.querySelectorAll('.trans-word').forEach(span => {
         const key = span.dataset.word;  // already lowercased
