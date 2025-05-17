@@ -29,9 +29,9 @@
       }
       return dp[m][n];
     }
-
+  
     async function loadExercise() {
-      // 1) load translations.json → build English→Conlang lookup
+      // 1) load translations.json
       const translationsArray = await fetch('translations.json')
         .then(r => r.json())
         .catch(e => { console.error('Failed to load translations.json', e); return []; });
@@ -68,18 +68,16 @@
   
       // 3) render prompt, splitting on whitespace but preserving it
       const rawPrompt = exercise.prompt;
-      // split into words *and* whitespace chunks
       const tokens = rawPrompt.split(/(\s+)/);
       const promptHtml = tokens.map(token => {
-        // if it's purely whitespace, leave it alone
         if (/^\s+$/.test(token)) return token;
-        // strip trailing punctuation for lookup
-        const key = token.replace(/^[“"‘'([{]+|[.,!?:;”"’'\])}]+$/g, '').toLowerCase();
-        const cl = enToCl[key] || '(no entry)';
-        return `<span class="trans-word" data-word="${key}" title="${cl}">${token}</span>`;
+        const key = token
+          .replace(/^[“"‘'([{]+|[.,!?:;”"’'\])}]+$/g, '')
+          .toLowerCase();
+        return `<span class="trans-word" data-word="${key}">${token}</span>`;
       }).join('');
   
-      // 4) put it into the page
+      // 4) inject into page
       const details = document.getElementById('exercise-details');
       details.innerHTML = `
         <h2>${promptHtml}</h2>
@@ -88,11 +86,10 @@
       document.getElementById('back').innerHTML =
         `<a href="lessons?lesson_id=${lessonId}">Back</a>`;
   
-      // 5) render multiple-choice buttons (unchanged)
+      // 5) render multiple-choice buttons
       if (exercise.type === 'multiple_choice') {
         const options = JSON.parse(exercise.options);
         const correct = exercise.correct_answer;
-        const statusDiv = document.getElementById('status');
         const optsCon = document.getElementById('options-container');
   
         options.forEach(opt => {
@@ -101,61 +98,42 @@
           btn.addEventListener('click', () => {
             if (opt === correct) {
               btn.style.backgroundColor = 'lightgreen';
-              statusDiv.textContent = '✅ Correct!';
             } else {
               btn.style.backgroundColor = 'salmon';
-              statusDiv.textContent = '❌ Incorrect. Try again!';
             }
           });
           optsCon.appendChild(btn);
         });
       }
   
-      // 6) attach hover behavior to all the prompt-word spans
-      // after rendering promptHtml and options...
-
-      // keep the full translations array around
-
-      const statusDiv = document.getElementById('status');
-
+      // 6) attach hover behavior to prompt-word spans (native tooltip only)
       document.querySelectorAll('.trans-word').forEach(span => {
-        const key = span.dataset.word; // already lowercased
+        const key = span.dataset.word;  // already lowercased
         span.style.cursor = 'help';
-
+  
         span.addEventListener('mouseenter', () => {
-          // 1) find all entries whose English gloss contains the key
           const matches = translationsArray
             .filter(({translation}) =>
               translation.toLowerCase().includes(key)
             )
             .map(entry => ({
-              conlang: entry.conlang,
+              conlang:     entry.conlang,
               translation: entry.translation,
-              dist: levenshtein(entry.translation.toLowerCase(), key)
+              dist:        levenshtein(entry.translation.toLowerCase(), key)
             }))
             .sort((a, b) => a.dist - b.dist)
-            .slice(0, 10);                     // only the first 10
-
-          if (matches.length === 0) {
-            statusDiv.textContent = '(no matches)';
-            span.title = '(no matches)';
-          } else {
-            // build "conlang: translation" lines
-            const lines = matches.map(m => `${m.conlang}: ${m.translation}`);
-            const text = lines.join('\n');
-            statusDiv.textContent = text;
-            span.title = text;               // native tooltip
-          }
-        });
-
-        span.addEventListener('mouseleave', () => {
-          statusDiv.textContent = '';
+            .slice(0, 5);
+  
+          const lines = matches.length
+            ? matches.map(m => `${m.conlang}: ${m.translation}`)
+            : ['(no matches)'];
+  
+          span.title = lines.join('\n');
         });
       });
     }
   
     loadExercise();
-  </script>
-  
+  </script>  
 </body>
 </html>
