@@ -47,7 +47,7 @@
   
         html += `<div>`;
           options.forEach((option, i) => {
-            html += `<button onclick="answer(${JSON.stringify(option)}, ${JSON.stringify(correctIndex)})">${option}</button>`;
+            html += `<button onclick='answer(${JSON.stringify(option)}, ${JSON.stringify(correctIndex)})'>${option}</button>`;
           });
         html += `</div>`;
       }
