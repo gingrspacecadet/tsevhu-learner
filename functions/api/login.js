@@ -87,11 +87,20 @@ export async function onRequest({ request, env }) {
   }
 
   // Success
+  // Generate a secure random session token
+  const tokenBytes = crypto.getRandomValues(new Uint8Array(32));
+  const token = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  
+  // TODO: Save session token to DB
+  
   return new Response(
-    JSON.stringify({ success: true, userId: user.id }),
-    { status: 200, headers: { 
-        'Content-Type': 'application/json',
-        'Set-Cookie': `session=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`
-    } }
-  );
+  JSON.stringify({ success: true, userId: user.id }),
+  {
+      status: 200,
+      headers: {
+      'Content-Type': 'application/json',
+      'Set-Cookie': `session=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`
+      }
+  }
+  );  
 }
