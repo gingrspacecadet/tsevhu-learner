@@ -47,7 +47,7 @@ export async function onRequestPost(context) {
     const id = crypto.randomUUID();
     const stmt = context.env.DB.prepare(`INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)`);
     
-    await stmt.run([id, body.title, body.description]);
+    await stmt.bind([id, body.title, body.description]);
 
     return new Response(JSON.stringify({ id }), {
         headers: { 'Content-Type': 'application/json' },
