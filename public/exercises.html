@@ -12,17 +12,36 @@
 
   <script>
     async function loadExercise() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const lessonId = urlParams.get('lesson_id');
-      const exerciseId = urlParams.get('exercise_id');
+      const [translationsRes, exerciseRes] = await Promise.all([
+        fetch('../translations.json'),
+        (async () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const lessonId = urlParams.get('lesson_id');
+          const exerciseId = urlParams.get('exercise_id');
+          if (!lessonId || !exerciseId) {
+            document.getElementById('exercise-details').innerText = 'Missing lesson_id or exercise_id in URL';
+            throw new Error('Missing params');
+          }
+          const res = await fetch(`/api/exercises?lesson_id=${lessonId}`);
+          res.lessonId = lessonId;
+          res.exerciseId = exerciseId;
+          return res;
+        })()
+      ]);
   
-      if (!lessonId || !exerciseId) {
-        document.getElementById('exercise-details').innerText = 'Missing lesson_id or exercise_id in URL';
-        return;
+      // load translations.json
+      let translationsArray = [];
+      try {
+        translationsArray = await translationsRes.json();
+      } catch (e) {
+        console.error('Failed to load translations.json:', e);
       }
+      // build lookup map: { conlangWord: translation }
+      const lookup = Object.fromEntries(
+        translationsArray.map(({conlang, translation}) => [conlang, translation])
+      );
   
-      // Fetch the exercise details
-      const exerciseRes = await fetch(`/api/exercises?lesson_id=${lessonId}`);
+      // now load exercises
       let exercises = [];
       try {
         exercises = await exerciseRes.json();
@@ -31,46 +50,59 @@
         document.getElementById('exercise-details').innerText = 'Failed to load exercise data';
         return;
       }
-
+      const lessonId = exerciseRes.lessonId;
+      const exerciseId = exerciseRes.exerciseId;
       const exercise = exercises.find(ex => ex.id === exerciseId);
       if (!exercise) {
         document.getElementById('exercise-details').innerText = 'Exercise not found';
         return;
       }
   
-      console.log(exercise);
-
-      // Display exercise details
-      let html = `<h2>${exercise.prompt}</h2>`;
-      if (exercise.type === 'multiple_choice') {
-        const options = JSON.parse(exercise.options); // array of strings
-        const correctIndex = exercise.correct_answer; // assuming your API includes this
-  
-        html += `<div>`;
-          options.forEach((option, i) => {
-            html += `<button onclick='answer(${JSON.stringify(option)}, ${JSON.stringify(correctIndex)}, ${i})' id='${i}'>${option}</button>`;
-          });
-        html += `</div>`;
-      }
-  
-      document.getElementById('exercise-details').innerHTML = html;
+      // render prompt + buttons
+      const container = document.getElementById('exercise-details');
+      container.innerHTML = `<h2>${exercise.prompt}</h2><div id="options-container"></div>`;
       document.getElementById('back').innerHTML = `<a href="lessons?lesson_id=${lessonId}">Back</a>`;
-    }
   
-    function answer(selectedValue, correctValue, id) {
-      const button = document.getElementById(id);
-      const status = document.getElementById(status);
-      if (selectedValue === correctValue) {
-        button.style.backgroundColor = 'lightgreen';
-        status.innerHTML = `Correct!`;
-      } else {
-        button.style.backgroundColor = 'red';
-        status.innerHTML = `Incorrect. Try again!`;
+      if (exercise.type === 'multiple_choice') {
+        const options = JSON.parse(exercise.options);
+        const correctAnswer = exercise.correct_answer;
+        const optionsContainer = document.getElementById('options-container');
+        const statusDiv = document.getElementById('status');
+  
+        options.forEach((option, i) => {
+          const btn = document.createElement('button');
+          btn.id = `opt-${i}`;
+          btn.textContent = option;
+  
+          // native tooltip
+          btn.title = lookup[option] || '';
+  
+          // hover display in #status
+          btn.addEventListener('mouseenter', () => {
+            statusDiv.textContent = lookup[option] || '';
+          });
+          btn.addEventListener('mouseleave', () => {
+            statusDiv.textContent = '';
+          });
+  
+          // click to answer
+          btn.addEventListener('click', () => {
+            if (option === correctAnswer) {
+              btn.style.backgroundColor = 'lightgreen';
+              statusDiv.textContent = '✅ Correct!';
+            } else {
+              btn.style.backgroundColor = 'salmon';
+              statusDiv.textContent = '❌ Incorrect. Try again!';
+            }
+          });
+  
+          optionsContainer.appendChild(btn);
+        });
       }
     }
-
   
     loadExercise();
-  </script>  
+  </script>
+   
 </body>
 </html>
