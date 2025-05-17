@@ -1,3 +1,5 @@
+import { log } from "console";
+
 export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const lessonId = url.searchParams.get('lesson_id');
@@ -14,6 +16,8 @@ export async function onRequestGet(context) {
                 headers: { 'Content-Type': 'application/json' },
             });
         }
+
+        console.log(result);
 
         return new Response(JSON.stringify(lesson), {
             headers: { 'Content-Type': 'application/json' },
