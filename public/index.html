@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lesson List</title>
+  <link rel="stylesheet" href="style.css"/>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,9 +46,14 @@
         return;
       }
       lessonList.innerHTML = lessons.map(lesson => `
-        <div>
-          <a href="view-lesson.html?lesson_id=${lesson.id}">${lesson.title}</a>
-        </div>
+      <div role="button"
+        tabindex="0"
+        onclick="window.location.href='${lesson.id}'"
+        onkeydown="if(event.key === 'Enter' || event.key === ' ') this.click();"
+        id="lesson">
+          <h2>${lesson.title}</h2>
+          <p>${lesson.description}</p>
+      </div>
       `).join('');
     }
 
