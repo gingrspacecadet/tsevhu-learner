@@ -27,7 +27,7 @@
       const lessonRes = await fetch(`/api/lessons?lessonId=${lessonId}`);
       const lessonData = await lessonRes.json();
       document.getElementById('lesson-name').innerHTML =
-        `<h2>${lessonData.title}</h2>`;
+        `<h2>${lessonData.results[0].title}</h2>`;
 
       // 2) Fetch exercises for this lesson
       const exercisesRes = await fetch(`/api/exercises?lessonId=${lessonId}`);

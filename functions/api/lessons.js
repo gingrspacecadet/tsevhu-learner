@@ -14,10 +14,7 @@ export async function onRequestGet(context) {
                 headers: { 'Content-Type': 'application/json' },
             });
         }
-
-        console.debug(lesson);
-        console.debug(result);
-
+        
         return new Response(JSON.stringify(lesson), {
             headers: { 'Content-Type': 'application/json' },
         });
