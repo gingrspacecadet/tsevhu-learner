@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lesson List</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="styles/index.css"/>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -48,7 +48,7 @@
       lessonList.innerHTML = lessons.map(lesson => `
       <div role="button"
         tabindex="0"
-        onclick="window.location.href='${lesson.id}'"
+        onclick="window.location.href='lessons?lesson_id=${lesson.id}'"
         onkeydown="if(event.key === 'Enter' || event.key === ' ') this.click();"
         id="lesson">
           <h2>${lesson.title}</h2>

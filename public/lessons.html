@@ -42,7 +42,7 @@
       const exercisesContainer = document.getElementById('exercises');
       exercisesContainer.innerHTML = exercises.map(exercise => `
         <div>
-          <a href="view-exercise.html?lesson_id=${lessonId}&exercise_id=${exercise.id}">${exercise.prompt}</a>
+          <a href="exercises.html?lesson_id=${lessonId}&exercise_id=${exercise.id}">${exercise.prompt}</a>
         </div>
       `).join('');
     }
