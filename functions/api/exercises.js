@@ -45,7 +45,7 @@ export async function onRequest({ request, env }) {
   
     // Query exercises for this lesson
     const exercisesQuery = `
-      SELECT id AS exerciseId, name, description -- select whatever columns you want here
+      SELECT id AS exerciseId, description -- select whatever columns you want here
         FROM exercises
        WHERE lessonId = ?
     `;
