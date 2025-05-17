@@ -47,7 +47,7 @@
   
         html += `<div>`;
           options.forEach((option, i) => {
-            html += `<button onclick='answer(${JSON.stringify(option)}, ${JSON.stringify(correctIndex)})'>${option}</button>`;
+            html += `<button onclick='answer(${JSON.stringify(option)}, ${JSON.stringify(correctIndex)}, ${i})' id='${i}'>${option}</button>`;
           });
         html += `</div>`;
       }
@@ -56,11 +56,12 @@
       document.getElementById('back').innerHTML = `<a href="lessons?lesson_id=${lessonId}">Back</a>`;
     }
   
-    function answer(selectedValue, correctValue) {
+    function answer(selectedValue, correctValue, id) {
+      const button = document.getElementById(id);
       if (selectedValue === correctValue) {
-        alert("✅ Correct!");
+        button.style.backgroundColor = 'lightgreen';
       } else {
-        alert("❌ Incorrect. Try again!");
+        button.style.backgroundColor = 'red';
       }
     }
 
