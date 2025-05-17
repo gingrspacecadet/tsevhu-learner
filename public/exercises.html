@@ -31,6 +31,8 @@
         return;
       }
   
+      console.log(exercise);
+
       const exercise = exercises.find(ex => ex.id === exerciseId);
       if (!exercise) {
         document.getElementById('exercise-details').innerText = 'Exercise not found';
