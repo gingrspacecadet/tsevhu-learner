@@ -36,6 +36,7 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
     const body = await context.request.json();
     console.log("Incoming request body:", body); // Log the body
+
     // Validate request body
     if (!body.title || !body.description) {
         return new Response(JSON.stringify({ error: "Title and description are required." }), {
@@ -43,13 +44,13 @@ export async function onRequestPost(context) {
             headers: { 'Content-Type': 'application/json' },
         });
     }
+
     const id = crypto.randomUUID();
     const stmt = context.env.DB.prepare(`INSERT INTO lessons (id, title, description) VALUES (?, ?, ?)`);
     
-    // Bind parameters
-    stmt.bind([id, body.title, body.description]);
     try {
-        await stmt.run(); // Execute the statement
+        // Bind parameters and execute the statement
+        await stmt.bind([id, body.title, body.description]).run();
     } catch (error) {
         console.error("Database error:", error); // Log the error
         return new Response(JSON.stringify({ error: "Database operation failed." }), {
@@ -57,6 +58,7 @@ export async function onRequestPost(context) {
             headers: { 'Content-Type': 'application/json' },
         });
     }
+
     return new Response(JSON.stringify({ id }), {
         headers: { 'Content-Type': 'application/json' },
     });
