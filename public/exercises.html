@@ -115,34 +115,36 @@
       // after rendering promptHtml and options...
 
       // keep the full translations array around
+
       const statusDiv = document.getElementById('status');
 
       document.querySelectorAll('.trans-word').forEach(span => {
-        const key = span.dataset.word; // the hovered English word, already lowercased
+        const key = span.dataset.word; // already lowercased
         span.style.cursor = 'help';
 
         span.addEventListener('mouseenter', () => {
-          // 1) find all entries whose translation includes the key
+          // 1) find all entries whose English gloss contains the key
           const matches = translationsArray
             .filter(({translation}) =>
               translation.toLowerCase().includes(key)
             )
-            // 2) compute distance for each match
             .map(entry => ({
               conlang: entry.conlang,
               translation: entry.translation,
               dist: levenshtein(entry.translation.toLowerCase(), key)
             }))
-            // 3) sort by distance (exact = 0 first)
-            .sort((a, b) => a.dist - b.dist);
+            .sort((a, b) => a.dist - b.dist)
+            .slice(0, 10);                     // only the first 10
 
           if (matches.length === 0) {
             statusDiv.textContent = '(no matches)';
             span.title = '(no matches)';
           } else {
-            const list = matches.map(m => m.conlang).join(', ');
-            statusDiv.textContent = list;
-            span.title = list;  // native tooltip
+            // build "conlang: translation" lines
+            const lines = matches.map(m => `${m.conlang}: ${m.translation}`);
+            const text = lines.join('\n');
+            statusDiv.textContent = text;
+            span.title = text;               // native tooltip
           }
         });
 
