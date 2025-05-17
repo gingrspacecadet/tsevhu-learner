@@ -4,7 +4,6 @@
 const encoder = new TextEncoder();
 
 async function hashPassword(password, salt) {
-  // Generate new salt if not provided
   if (!salt) {
     const saltBytes = crypto.getRandomValues(new Uint8Array(16));
     salt = Array.from(saltBytes).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -76,7 +75,6 @@ export async function onRequest({ request, env }) {
   }
 
   const user = results[0];
-  // Re-hash submitted password with stored salt
   const { hash: loginHash } = await hashPassword(password, user.salt);
 
   if (loginHash !== user.hash) {
@@ -86,21 +84,25 @@ export async function onRequest({ request, env }) {
     );
   }
 
-  // Success
-  // Generate a secure random session token
+  // Generate session token
   const tokenBytes = crypto.getRandomValues(new Uint8Array(32));
   const token = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-  
-  // TODO: Save session token to DB
-  
+
+  // Save session token to DB
+  await env.DB
+    .prepare(`UPDATE users SET sessionToken = ? WHERE id = ?`)
+    .bind(token, user.id)
+    .run();
+
+  // Return success with Set-Cookie header
   return new Response(
-  JSON.stringify({ success: true, userId: user.id }),
-  {
+    JSON.stringify({ success: true, userId: user.id }),
+    {
       status: 200,
       headers: {
-      'Content-Type': 'application/json',
-      'Set-Cookie': `session=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`
+        'Content-Type': 'application/json',
+        'Set-Cookie': `session=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`
       }
-  }
-  );  
+    }
+  );
 }
