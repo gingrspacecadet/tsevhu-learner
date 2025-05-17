@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>View Lesson</title>
+  <link rel="stylesheet" href="styles/lessons.css"/>
 </head>
 <body>
   <h1>Lesson Exercises</h1>
@@ -41,8 +42,12 @@
       // Display the exercises as links
       const exercisesContainer = document.getElementById('exercises');
       exercisesContainer.innerHTML = exercises.map(exercise => `
-        <div>
-          <a href="exercises.html?lesson_id=${lessonId}&exercise_id=${exercise.id}">${exercise.prompt}</a>
+        <div role="button"
+          tabindex="0"
+          onclick="window.location.href='lessons?lesson_id=${lesson.id}'"
+          onkeydown="if(event.key === 'Enter' || event.key === ' ') this.click();"
+          id="exercise">
+            <a href="exercises.html?lesson_id=${lessonId}&exercise_id=${exercise.id}">${exercise.prompt}</a>
         </div>
       `).join('');
     }

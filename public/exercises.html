@@ -6,6 +6,7 @@
 <body>
   <h1>Exercise Details</h1>
   <div id="exercise-details"></div>
+  <div id="back"></div>
 
   <script>
     async function loadExercise() {
@@ -45,6 +46,7 @@
       }
 
       document.getElementById('exercise-details').innerHTML = html;
+      document.getElementById('back').innerHTML = `<a href="lessons?lesson_id=${lessonId}">Back</a>`;
     }
 
     loadExercise();
