@@ -38,11 +38,9 @@
 
       // Display exercise details
       let html = `<h2>${exercise.prompt}</h2>`;
-      html += `<p>Type: ${exercise.type}</p>`;
-      html += `<p>Correct Answer: ${exercise.correct_answer}</p>`;
       if (exercise.type === 'multiple_choice') {
         const options = JSON.parse(exercise.options);
-        html += `<p>Options: ${options.join(', ')}</p>`;
+        html += `<div id="option">Options: ${options.join('</div><div id="option">')}</div`;
       }
 
       document.getElementById('exercise-details').innerHTML = html;
