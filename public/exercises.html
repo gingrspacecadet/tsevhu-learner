@@ -13,7 +13,7 @@
   <script>
     async function loadExercise() {
       const [translationsRes, exerciseRes] = await Promise.all([
-        fetch('../translations.json'),
+        fetch('translations.json'),
         (async () => {
           const urlParams = new URLSearchParams(window.location.search);
           const lessonId = urlParams.get('lesson_id');
