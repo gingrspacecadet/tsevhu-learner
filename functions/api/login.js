@@ -87,8 +87,11 @@ export async function onRequest({ request, env }) {
   }
 
   // Success
-  return new Response(
-    JSON.stringify({ success: true, userId: user.id }),
-    { status: 200, headers: { 'Content-Type': 'application/json' } }
-  );
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Set-Cookie': `session=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`
+    }
+  });
 }

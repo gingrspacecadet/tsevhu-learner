@@ -9,13 +9,12 @@
 <body>
   <h1>Login</h1>
   <div id="auth">
-    <!-- 1) Added id="loginForm" -->
     <form id="loginForm">
-      <!-- 2) Added name attributes -->
       <input type="text" name="username" placeholder="Username" required>
       <input type="password" name="password" placeholder="Password" required>
       <button type="submit">Submit</button>
     </form>
+    <div id="status"></div>
   </div>
   
   <script>
@@ -30,7 +29,7 @@
       const password = form.elements['password'].value;
 
       try {
-        // Send to your API endpoint
+        // Send to API endpoint
         const response = await fetch('../api/login', {
           method: 'POST',
           headers: {
@@ -45,12 +44,12 @@
 
         if (response.ok) {
           console.log('Login successful:', data);
-          // e.g. redirect on success:
-          // window.location.href = '/dashboard';
+          // Redirect on success:
+          window.location.href = '../';
         } else {
           console.error('Login failed:', data);
-          // show error to user, e.g.:
-          // document.getElementById('error').textContent = data.message;
+          // Show error to user
+          document.getElementById('status').textContent = data.message;
         }
       } catch (err) {
         console.error('Network or server error:', err);
