@@ -44,18 +44,27 @@
         console.error('Failed to parse exercises JSON:', e);
       }
 
-      // 3) Render the exercises as clickable divs
+      // 3) Render the exercises as clickable divs or 'test'
       const container = document.getElementById('exercises');
       container.innerHTML = exercises
-        .map(ex => `
-          <div role="button"
-               tabindex="0"
-               onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${ex.exerciseId}'"
-               onkeydown="if(event.key==='Enter'||event.key===' ') this.click();"
-               class="exercise-card">
-            <h2>${ex.prompt}</h2>
-          </div>
-        `)
+        .map(ex => {
+          if (ex.completed === false) {
+            return `
+              <div role="button"
+                  tabindex="0"
+                  onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${ex.exerciseId}'"
+                  onkeydown="if(event.key==='Enter'||event.key===' ') this.click();"
+                  class="exercise-card">
+                <h2>${ex.prompt}</h2>
+              </div>
+            `;
+          } else {
+            return `
+              <div id="completed">
+                <h2>${ex.prompt}</h2>
+              </div>`;
+          }
+        })
         .join('');
     }
 
