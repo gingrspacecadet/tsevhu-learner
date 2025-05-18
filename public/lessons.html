@@ -48,12 +48,11 @@
         if (!ex.completed) {
           return `
             <div
-              class="exercise"
+              id="exercise"
               role="button"
               tabindex="0"
               onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${ex.id}'"
               onkeydown="if (event.key === 'Enter' || event.key === ' ') this.click();"
-              id="exercise"
             >
               <h2>${ex.prompt}</h2>
             </div>
