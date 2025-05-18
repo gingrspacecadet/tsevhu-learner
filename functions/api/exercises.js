@@ -31,7 +31,7 @@ export async function onRequestGet(context) {
   
     // 2. Lookup user id by session token
     const userRes = await context.env.DB.prepare(
-      `SELECT id FROM users WHERE session_token = ?`
+      `SELECT id FROM users WHERE sessionToken = ?`
     )
       .bind(sessionToken)
       .first();
@@ -50,9 +50,9 @@ export async function onRequestGet(context) {
         e.*,
         EXISTS(
           SELECT 1 FROM progress p
-          WHERE p.user_id = ?
-            AND p.lesson_id = e.lesson_id
-            AND p.exercise_id = e.id
+          WHERE p.userId = ?
+            AND p.lessoId = e.lesson_id
+            AND p.exerciseId = e.id
         ) AS completed
       FROM exercises e
       WHERE e.lesson_id = ?
