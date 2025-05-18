@@ -34,7 +34,7 @@ export async function onRequestGet(context) {
       `SELECT id FROM users WHERE session_token = ?`
     )
       .bind(sessionToken)
-      .get();
+      .first();
   
     if (!userRes) {
       return new Response(
@@ -56,7 +56,7 @@ export async function onRequestGet(context) {
         ) AS completed
       FROM exercises e
       WHERE e.lesson_id = ?
-      ORDER BY e.` + "order" + `
+      ORDER BY e."order"
     `;
   
     const exercisesRes = await context.env.DB.prepare(query)
@@ -83,7 +83,7 @@ export async function onRequestGet(context) {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-}  
+} 
 
 export async function onRequestPost(context) {
     const url = new URL(context.request.url);
