@@ -51,7 +51,7 @@ export async function onRequestGet(context) {
         EXISTS(
           SELECT 1 FROM progress p
           WHERE p.userId = ?
-            AND p.lessoId = e.lesson_id
+            AND p.lessonId = e.lesson_id
             AND p.exerciseId = e.id
         ) AS completed
       FROM exercises e
