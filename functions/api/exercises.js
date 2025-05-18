@@ -1,34 +1,89 @@
 export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const lessonId = url.searchParams.get('lesson_id');
-
+  
     if (!lessonId) {
-        return new Response(JSON.stringify({ error: "Missing lesson_id query parameter" }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-        });
+      return new Response(
+        JSON.stringify({ error: 'Missing lesson_id query parameter' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
-
-    const exercises = await context.env.DB.prepare(`
-        SELECT * FROM exercises WHERE lesson_id = ? ORDER BY "order"
-    `).bind(lessonId).all();
-
-    // Parse metadata and add correct_answer to top-level object
-    const parsedExercises = exercises.results.map(ex => {
-        let metadata = {};
-        try {
-            metadata = JSON.parse(ex.metadata);
-        } catch (e) {}
-        return {
-            ...ex,
-            correct_answer: metadata.correct_answer || null
-        };
+  
+    // 1. Get session token from cookies
+    const cookieHeader = context.request.headers.get('cookie') || '';
+    const cookies = Object.fromEntries(
+      cookieHeader.split(';').map(c => {
+        const [key, ...vals] = c.trim().split('=');
+        return [key, vals.join('=')];
+      })
+    );
+    const sessionToken = cookies['session_token'];
+  
+    if (!sessionToken) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+  
+    // 2. Lookup user id by session token
+    const userRes = await context.env.DB.prepare(
+      `SELECT id FROM users WHERE session_token = ?`
+    )
+      .bind(sessionToken)
+      .get();
+  
+    if (!userRes) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid session' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+    const userId = userRes.id;
+  
+    // 3. Fetch exercises with completed flag
+    const query = `
+      SELECT
+        e.*,
+        EXISTS(
+          SELECT 1 FROM progress p
+          WHERE p.user_id = ?
+            AND p.lesson_id = e.lesson_id
+            AND p.exercise_id = e.id
+        ) AS completed
+      FROM exercises e
+      WHERE e.lesson_id = ?
+      ORDER BY e.` + "order" + `
+    `;
+  
+    const exercisesRes = await context.env.DB.prepare(query)
+      .bind(userId, lessonId)
+      .all();
+  
+    // 4. Parse metadata and shape response
+    const parsedExercises = exercisesRes.results.map(ex => {
+      let metadata = {};
+      try {
+        metadata = JSON.parse(ex.metadata);
+      } catch (e) {}
+      return {
+        id: ex.id,
+        lesson_id: ex.lesson_id,
+        title: ex.title,
+        content: ex.content,
+        correct_answer: metadata.correct_answer || null,
+        completed: Boolean(ex.completed),
+      };
     });
-
+  
     return new Response(JSON.stringify(parsedExercises), {
-        headers: { 'Content-Type': 'application/json' },
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
     });
-}
+}  
 
 export async function onRequestPost(context) {
     const url = new URL(context.request.url);
