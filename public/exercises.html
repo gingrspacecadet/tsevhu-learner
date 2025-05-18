@@ -94,6 +94,7 @@
   
         options.forEach(opt => {
           const btn = document.createElement('button');
+          btn.id = "multiple_choice";
           btn.textContent = opt;
           btn.addEventListener('click', () => {
             if (opt === correct) {
@@ -111,6 +112,35 @@
             } else {
               btn.style.backgroundColor = 'salmon';
             }
+          });
+          optsCon.appendChild(btn);
+        });
+      } else if(exercise.type === 'flashcard') {
+        const options = JSON.parse(exercise.options);
+        const correct = exercise.correct_answer;
+        const optsCon = document.getElementById('options-container');
+  
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.id = "flashcard";
+          btn.textContent = opt;
+          btn.addEventListener('click', () => {
+              btn.style.backgroundColor = 'lightgreen';
+              if (btn.value === correct) {
+                btn.value = options;
+              } else {
+                btn.value = correct;
+              }
+              fetch('/api/progress', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  lessonId: lessonId,
+                  exerciseId: exerciseId
+                })
+              });
           });
           optsCon.appendChild(btn);
         });
