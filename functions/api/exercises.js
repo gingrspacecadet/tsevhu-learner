@@ -71,10 +71,10 @@ export async function onRequestGet(context) {
       } catch (e) {}
       return {
         id: ex.id,
-        lesson_id: ex.lesson_id,
-        title: ex.title,
-        content: ex.content,
-        correct_answer: metadata.correct_answer || null,
+        type: ex.type,
+        prompt: ex.prompt,
+        options: ex.options,
+        metadata: metadata,
         completed: Boolean(ex.completed),
       };
     });
