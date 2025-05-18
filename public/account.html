@@ -16,7 +16,7 @@
   </div>
   <script>
     async function loadProgress() {
-        const progress = await fetch('/api/account');
+        const progress = await fetch(`/api/account`);
         const progressContainer = document.getElementById('progress');
         progressContainer.innerHTML = progress;
     }
