@@ -42,24 +42,30 @@
 
       // Display the exercises as links
       const exercisesContainer = document.getElementById('exercises');
-      console.log(exercises);
-      if (exercises.completed) {
-        exercisesContainer.innerHTML = exercises.map(exercise => `
-          <div role="button"
-            tabindex="0"
-            onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${exercise.id}'"
-            onkeydown="if(event.key === 'Enter' || event.key === ' ') this.click();"
-            id="exercise">
-              <h2>${exercise.prompt}</h2>
-          </div>
-        `).join('');
-      } else {
-        exercisesContainer.innerHTML = exercises.map(exercise => `
-        <div id="completed">
-            <h2>${exercise.prompt}</h2>
-        </div>
-      `).join('');
-      }
+      exercisesContainer.innerHTML = exercises
+      .map(ex => {
+        // for each exercise, check its own completed flag
+        if (ex.completed) {
+          return `
+            <div
+              class="exercise"
+              role="button"
+              tabindex="0"
+              onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${ex.id}'"
+              onkeydown="if (event.key === 'Enter' || event.key === ' ') this.click();"
+            >
+              <h2>${ex.prompt}</h2>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="incomplete">
+              <h2>${ex.prompt}</h2>
+            </div>
+          `;
+        }
+      })
+      .join('');
     }
 
     newExercise();
