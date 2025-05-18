@@ -146,7 +146,12 @@
         });
       } else if (exercise.type === 'sentence_builder') {
         const words = JSON.parse(exercise.options);
-        const correct = exercise.correct_answer.trim();
+        // pull correct answer out of metadata array
+        const metadata = JSON.parse(exercise.metadata);
+        const correctEntry = metadata.find(item =>
+          item.key === 'correct_answer' || item.name === 'correct_answer'
+        );
+        const correct = (correctEntry && correctEntry.value || '').trim();
         const optsCon = document.getElementById('options-container');
 
         // 1) Create builder display
