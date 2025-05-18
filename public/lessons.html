@@ -42,6 +42,7 @@
 
       // Display the exercises as links
       const exercisesContainer = document.getElementById('exercises');
+      console.log(exercises);
       if (exercises.completed) {
         exercisesContainer.innerHTML = exercises.map(exercise => `
           <div role="button"
