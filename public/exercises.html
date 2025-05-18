@@ -144,6 +144,73 @@
           });
           optsCon.appendChild(btn);
         });
+      } else if (exercise.type === 'sentence_builder') {
+        const words = JSON.parse(exercise.options);
+        const correct = exercise.correct_answer.trim();
+        const optsCon = document.getElementById('options-container');
+
+        // 1) Create builder display
+        const builder = document.createElement('div');
+        builder.id = 'sentence-builder';
+        builder.style.minHeight = '2em';
+        builder.style.padding = '0.5em';
+        builder.style.border = '1px solid #ccc';
+        builder.style.marginBottom = '0.5em';
+        optsCon.parentNode.insertBefore(builder, optsCon);
+
+        // 2) Shuffle words
+        for (let i = words.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [words[i], words[j]] = [words[j], words[i]];
+        }
+
+        // 3) Create word-buttons
+        words.forEach((w, i) => {
+          const btn = document.createElement('button');
+          btn.textContent = w;
+          btn.style.margin = '0.2em';
+          btn.addEventListener('click', () => {
+            builder.textContent += (builder.textContent ? ' ' : '') + w;
+            btn.disabled = true;
+          });
+          optsCon.appendChild(btn);
+        });
+
+        // 4) Clear button
+        const clearBtn = document.createElement('button');
+        clearBtn.textContent = 'Clear';
+        clearBtn.style.margin = '0.2em';
+        clearBtn.addEventListener('click', () => {
+          builder.textContent = '';
+          optsCon.querySelectorAll('button').forEach(b => b.disabled = false);
+          status.innerText = '';
+        });
+        optsCon.appendChild(clearBtn);
+
+        // 5) Submit button
+        const submitBtn = document.createElement('button');
+        submitBtn.textContent = 'Check';
+        submitBtn.style.margin = '0.2em';
+        submitBtn.addEventListener('click', () => {
+          const attempt = builder.textContent.trim();
+          if (attempt === correct) {
+            builder.style.backgroundColor = 'lightgreen';
+            status.innerText = 'Correct!';
+            // record progress
+            fetch('/api/progress', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                lessonId: lessonId,
+                exerciseId: exerciseId
+              })
+            });
+          } else {
+            builder.style.backgroundColor = 'salmon';
+            status.innerText = `Try again. You built: “${attempt}”`;
+          }
+        });
+        optsCon.appendChild(submitBtn);
       }
   
       // 6) attach hover behavior to prompt-word spans (native tooltip only)
