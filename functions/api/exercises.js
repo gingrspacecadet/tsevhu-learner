@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
         return [key, vals.join('=')];
       })
     );
-    const sessionToken = cookies['session_token'];
+    const sessionToken = cookies['session'];
   
     if (!sessionToken) {
       return new Response(
