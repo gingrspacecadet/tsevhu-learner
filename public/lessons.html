@@ -45,7 +45,7 @@
       exercisesContainer.innerHTML = exercises
       .map(ex => {
         // for each exercise, check its own completed flag
-        if (ex.completed) {
+        if (!ex.completed) {
           return `
             <div
               class="exercise"
@@ -53,13 +53,14 @@
               tabindex="0"
               onclick="window.location.href='exercises?lesson_id=${lessonId}&exercise_id=${ex.id}'"
               onkeydown="if (event.key === 'Enter' || event.key === ' ') this.click();"
+              id="exercise"
             >
               <h2>${ex.prompt}</h2>
             </div>
           `;
         } else {
           return `
-            <div class="incomplete">
+            <div id="complete">
               <h2>${ex.prompt}</h2>
             </div>
           `;
