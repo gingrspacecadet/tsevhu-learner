@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Account</title>
+  <link rel="stylesheet" href="styles/account.css"/>
+</head>
+<body>
+  <h1>Account</h1>
+  <div>
+    <h2>Progress</h2>
+    <div id="progress">
+
+    </div>
+  </div>
+  <script>
+    async function loadProgress() {
+        const progress = await fetch('/api/progress');
+        const progressContainer = document.getElementById('progress');
+        progressContainer.innerHTML = progress;
+    }
+  </script>
+</body>
