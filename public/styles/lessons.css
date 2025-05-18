@@ -12,3 +12,11 @@
     left: 0;
     margin: 10px;
 }
+
+#completed {
+    border: 2px solid black;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px;
+    background-color: lightgreen;
+}
