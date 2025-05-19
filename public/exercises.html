@@ -144,6 +144,18 @@
           });
           optsCon.appendChild(btn);
         });
+      } else if (exercise.type === 'info') {
+        const card = document.createElement('button');
+        card.innerHTML = exercise.metadata.correct_answer.trim();
+        // record progress
+        fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lessonId: lessonId,
+            exerciseId: exerciseId
+          })
+        });
       } else if (exercise.type === 'sentence_builder') {
         const words = JSON.parse(exercise.options);
         const correct = exercise.metadata.correct_answer.trim();
@@ -211,18 +223,6 @@
           }
         });
         optsCon.appendChild(submitBtn);
-      } else if (exercise.type === 'info') {
-        const card = document.createElement('button');
-        card.innerHTML = exercise.metadata.correct_answer;
-          // record progress
-          fetch('/api/progress', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            lessonId: lessonId,
-            exerciseId: exerciseId
-          })
-        });
       }
   
       // 6) attach hover behavior to prompt-word spans (native tooltip only)
