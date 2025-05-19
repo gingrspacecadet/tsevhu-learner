@@ -149,10 +149,9 @@
         const correct = exercise.correct_answer;
         const optsCon = document.getElementById('options-container');
   
-        options.forEach(opt => {
           const btn = document.createElement('button');
           btn.id = "flashcard";
-          btn.textContent = opt;
+          btn.textContent = options;
           btn.addEventListener('click', () => {
               btn.style.backgroundColor = 'lightgreen';
               if (btn.value === correct) {
@@ -172,7 +171,6 @@
               });
           });
           optsCon.appendChild(btn);
-        });
       } else if (exercise.type === 'sentence_builder') {
         const words = JSON.parse(exercise.options);
         const correct = exercise.metadata.correct_answer.trim();
