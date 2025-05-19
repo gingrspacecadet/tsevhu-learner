@@ -89,14 +89,13 @@
       // 5) render multiple-choice buttons
       if (exercise.type === 'multiple_choice') {
         const options = JSON.parse(exercise.options);
-        const correct = exercise.correct_answer;
+        const correct = exercise.metadata.correct_answer;
         const optsCon = document.getElementById('options-container');
   
         options.forEach(opt => {
           const btn = document.createElement('button');
           btn.id = "multiple_choice";
           btn.textContent = opt;
-          console.log(correct);
           btn.addEventListener('click', () => {
             if (opt === correct) {
               btn.style.backgroundColor = 'lightgreen';
