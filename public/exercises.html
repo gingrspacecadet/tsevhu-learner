@@ -145,7 +145,7 @@
           optsCon.appendChild(btn);
         });
       } else if (exercise.type === 'info') {
-        const options = JSON.parse(exercise.options);
+        const options = exercise.options;
         const correct = exercise.correct_answer;
         const optsCon = document.getElementById('options-container');
   
