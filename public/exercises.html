@@ -117,7 +117,7 @@
         });
       } else if(exercise.type === 'flashcard') {
         const options = JSON.parse(exercise.options);
-        const correct = exercise.correct_answer;
+        const correct = exercise.metadata.correct_answer;
         const optsCon = document.getElementById('options-container');
   
         options.forEach(opt => {
@@ -145,8 +145,7 @@
           optsCon.appendChild(btn);
         });
       } else if (exercise.type === 'info') {
-        const options = exercise.options;
-        const correct = exercise.correct_answer;
+        const options = exercise.metadata.correct_answer;
         const optsCon = document.getElementById('options-container');
   
           const btn = document.createElement('button');
@@ -154,11 +153,6 @@
           btn.textContent = options;
           btn.addEventListener('click', () => {
               btn.style.backgroundColor = 'lightgreen';
-              if (btn.value === correct) {
-                btn.value = options;
-              } else {
-                btn.value = correct;
-              }
               fetch('/api/progress', {
                 method: 'POST',
                 headers: {
